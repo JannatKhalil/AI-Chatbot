@@ -1,0 +1,21 @@
+Jannat AI Knowledge Base
+
+Jannat AI is a full-stack AI chatbot developed as a hackathon project.
+
+Jannat AI uses React and Tailwind CSS for its frontend.
+
+The backend of Jannat AI is built using FastAPI and Python.
+
+MongoDB Atlas is used to store user accounts, conversations, and messages.
+
+Qdrant Cloud is used as the vector database for Retrieval-Augmented Generation (RAG).
+
+RAG stands for Retrieval-Augmented Generation. It allows an AI system to retrieve relevant information from a knowledge base before generating a response.
+
+Jannat AI supports user registration, login, logout, multiple conversations, automatic chat titles, chat renaming, chat deletion, and saved conversation history.
+
+Passwords are stored as secure hashes rather than plain text.
+
+Jannat AI currently uses a locally running Ollama language model for generating AI responses.
+
+The goal of Jannat AI is to provide a helpful, user-friendly AI assistant with secure accounts and persistent conversations.
