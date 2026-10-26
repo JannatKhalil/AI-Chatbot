@@ -1,9 +1,8 @@
-import json
-import urllib.request
-import urllib.error
+import os
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
+from groq import Groq, APIStatusError, APIConnectionError
 
 from app.services.rag import retrieve_knowledge
 from app.services.security import get_current_user_id
@@ -12,17 +11,9 @@ from app.services.security import get_current_user_id
 router = APIRouter(prefix="/api/ai", tags=["AI"])
 
 
-# ==============================
-# REQUEST SCHEMA
-# ==============================
-
 class AIRequest(BaseModel):
     message: str = Field(min_length=1, max_length=2000)
 
-
-# ==============================
-# SECURE AI + RAG ENDPOINT
-# ==============================
 
 @router.post("/chat")
 def chat_with_ai(
@@ -30,7 +21,7 @@ def chat_with_ai(
     user_id: str = Depends(get_current_user_id)
 ):
     try:
-        # STEP 1: Retrieve relevant knowledge from Qdrant
+        # STEP 1: Retrieve knowledge from Qdrant
         knowledge = retrieve_knowledge(request.message)
 
         # STEP 2: Prepare AI instructions
@@ -63,10 +54,21 @@ Rules:
 - For general questions, answer normally.
 """
 
-        # STEP 3: Prepare Ollama request
-        payload = json.dumps({
-            "model": "qwen2.5:1.5b",
-            "messages": [
+        # STEP 3: Read Groq API key
+        api_key = os.getenv("GROQ_API_KEY")
+
+        if not api_key:
+            raise HTTPException(
+                status_code=503,
+                detail="GROQ_API_KEY is not configured"
+            )
+
+        # STEP 4: Connect to Groq
+        client = Groq(api_key=api_key, timeout=60.0)
+
+        response = client.chat.completions.create(
+            model="openai/gpt-oss-20b",
+            messages=[
                 {
                     "role": "system",
                     "content": system_prompt
@@ -76,28 +78,11 @@ Rules:
                     "content": request.message
                 }
             ],
-            "stream": False
-        }).encode("utf-8")
-
-        http_request = urllib.request.Request(
-            "http://127.0.0.1:11434/api/chat",
-            data=payload,
-            headers={
-                "Content-Type": "application/json"
-            },
-            method="POST"
+            temperature=0.7
         )
 
-        # STEP 4: Generate AI response
-        with urllib.request.urlopen(
-            http_request,
-            timeout=180
-        ) as response:
-            result = json.loads(
-                response.read().decode("utf-8")
-            )
-
-        reply = result.get("message", {}).get("content")
+        # STEP 5: Return AI response
+        reply = response.choices[0].message.content
 
         if not reply:
             raise HTTPException(
@@ -105,7 +90,6 @@ Rules:
                 detail="AI returned an empty response"
             )
 
-        # STEP 5: Return answer
         return {
             "reply": reply,
             "rag_used": bool(knowledge)
@@ -114,10 +98,21 @@ Rules:
     except HTTPException:
         raise
 
-    except (urllib.error.URLError, TimeoutError):
+    except APIStatusError as error:
+        print("Groq API status:", error.status_code)
+        print("Groq API details:", str(error))
+
+        raise HTTPException(
+            status_code=502,
+            detail="Groq AI request failed"
+        )
+
+    except APIConnectionError as error:
+        print("Groq connection error:", type(error).__name__)
+
         raise HTTPException(
             status_code=503,
-            detail="Ollama is unavailable or took too long to respond"
+            detail="Groq AI connection failed"
         )
 
     except Exception as error:
