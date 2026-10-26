@@ -1,5 +1,6 @@
 import os
 import logging
+from pathlib import Path
 from functools import lru_cache
 
 from dotenv import load_dotenv
@@ -12,11 +13,21 @@ logger = logging.getLogger(__name__)
 
 COLLECTION_NAME = "jannat_knowledge"
 
+# Local embedding model directory
+MODEL_DIR = Path(__file__).resolve().parents[2] / "models"
+
 
 @lru_cache(maxsize=1)
 def get_embedding_model():
+    if not (MODEL_DIR / "model.onnx").is_file():
+        raise FileNotFoundError(
+            f"Embedding model not found at {MODEL_DIR}"
+        )
+
     return TextEmbedding(
-        model_name="sentence-transformers/all-MiniLM-L6-v2"
+        model_name="sentence-transformers/all-MiniLM-L6-v2",
+        specific_model_path=str(MODEL_DIR),
+        local_files_only=True,
     )
 
 
@@ -41,7 +52,7 @@ def retrieve_knowledge(question: str) -> str:
     try:
         model = get_embedding_model()
 
-        # Generate 384-dimensional query embedding
+        # Generate a 384-dimensional query embedding
         vector = list(model.embed([question]))[0].tolist()
 
         results = get_qdrant_client().query_points(
@@ -63,5 +74,5 @@ def retrieve_knowledge(question: str) -> str:
     except Exception:
         logger.exception("Knowledge retrieval failed")
 
-        # Allow AI to respond even if RAG is unavailable
+        # Keep AI working if knowledge retrieval fails
         return ""
