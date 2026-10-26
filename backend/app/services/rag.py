@@ -3,7 +3,7 @@ from functools import lru_cache
 
 from dotenv import load_dotenv
 from qdrant_client import QdrantClient
-from sentence_transformers import SentenceTransformer
+from fastembed import TextEmbedding
 
 load_dotenv()
 
@@ -12,24 +12,32 @@ COLLECTION_NAME = "jannat_knowledge"
 
 @lru_cache(maxsize=1)
 def get_embedding_model():
-    return SentenceTransformer("all-MiniLM-L6-v2")
+    return TextEmbedding(
+        model_name="sentence-transformers/all-MiniLM-L6-v2"
+    )
 
 
 @lru_cache(maxsize=1)
 def get_qdrant_client():
+    url = os.getenv("QDRANT_URL")
+    api_key = os.getenv("QDRANT_API_KEY")
+
+    if not url or not api_key:
+        raise RuntimeError("Qdrant environment variables are missing")
+
     return QdrantClient(
-        url=os.getenv("QDRANT_URL"),
-        api_key=os.getenv("QDRANT_API_KEY"),
+        url=url,
+        api_key=api_key,
         timeout=30,
     )
 
 
 def retrieve_knowledge(question: str) -> str:
-    # Convert the question into an embedding
     model = get_embedding_model()
-    vector = model.encode(question).tolist()
 
-    # Search Qdrant for relevant knowledge
+    # Generate a 384-dimensional query embedding
+    vector = list(model.embed([question]))[0].tolist()
+
     results = get_qdrant_client().query_points(
         collection_name=COLLECTION_NAME,
         query=vector,
@@ -38,7 +46,6 @@ def retrieve_knowledge(question: str) -> str:
         with_payload=True,
     )
 
-    # Extract retrieved knowledge
     chunks = [
         point.payload["text"]
         for point in results.points
