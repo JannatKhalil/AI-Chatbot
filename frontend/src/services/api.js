@@ -1,4 +1,4 @@
-const API_URL = "http://127.0.0.1:8010";
+const API_URL = "https://ai-chatbot-l2ps.vercel.app";
 
 // ===============================
 // LOGIN
@@ -47,14 +47,11 @@ export async function createChat(title, token) {
 // GET USER CHATS
 // ===============================
 export async function getUserChats(userId, token) {
-  const response = await fetch(
-    `${API_URL}/api/chats/user/${userId}`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+  const response = await fetch(`${API_URL}/api/chats/user/${userId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 
   const data = await response.json();
 
@@ -69,14 +66,11 @@ export async function getUserChats(userId, token) {
 // GET CHAT MESSAGES
 // ===============================
 export async function getChatMessages(chatId, token) {
-  const response = await fetch(
-    `${API_URL}/api/chats/${chatId}/messages`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+  const response = await fetch(`${API_URL}/api/chats/${chatId}/messages`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 
   const data = await response.json();
 
@@ -91,17 +85,14 @@ export async function getChatMessages(chatId, token) {
 // SAVE CHAT MESSAGE
 // ===============================
 export async function saveChatMessage(chatId, role, content, token) {
-  const response = await fetch(
-    `${API_URL}/api/chats/${chatId}/messages`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ role, content }),
-    }
-  );
+  const response = await fetch(`${API_URL}/api/chats/${chatId}/messages`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ role, content }),
+  });
 
   const data = await response.json();
 
@@ -113,7 +104,7 @@ export async function saveChatMessage(chatId, role, content, token) {
 }
 
 // ===============================
-// GET AI RESPONSE FROM OLLAMA
+// GET AI RESPONSE FROM GROQ
 // ===============================
 export async function getAIResponse(message, token) {
   const response = await fetch(`${API_URL}/api/ai/chat`, {
@@ -138,17 +129,14 @@ export async function getAIResponse(message, token) {
 // RENAME CHAT
 // ===============================
 export async function renameChat(chatId, title, token) {
-  const response = await fetch(
-    `${API_URL}/api/chats/${chatId}/rename`,
-    {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ title }),
-    }
-  );
+  const response = await fetch(`${API_URL}/api/chats/${chatId}/rename`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ title }),
+  });
 
   const data = await response.json();
 
@@ -163,15 +151,12 @@ export async function renameChat(chatId, title, token) {
 // DELETE CHAT
 // ===============================
 export async function deleteChat(chatId, token) {
-  const response = await fetch(
-    `${API_URL}/api/chats/${chatId}`,
-    {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+  const response = await fetch(`${API_URL}/api/chats/${chatId}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 
   if (!response.ok) {
     const data = await response.json();
