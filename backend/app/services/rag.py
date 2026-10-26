@@ -1,4 +1,5 @@
 import os
+import logging
 from functools import lru_cache
 
 from dotenv import load_dotenv
@@ -6,6 +7,8 @@ from qdrant_client import QdrantClient
 from fastembed import TextEmbedding
 
 load_dotenv()
+
+logger = logging.getLogger(__name__)
 
 COLLECTION_NAME = "jannat_knowledge"
 
@@ -23,7 +26,9 @@ def get_qdrant_client():
     api_key = os.getenv("QDRANT_API_KEY")
 
     if not url or not api_key:
-        raise RuntimeError("Qdrant environment variables are missing")
+        raise RuntimeError(
+            "Qdrant environment variables are missing"
+        )
 
     return QdrantClient(
         url=url,
@@ -33,23 +38,30 @@ def get_qdrant_client():
 
 
 def retrieve_knowledge(question: str) -> str:
-    model = get_embedding_model()
+    try:
+        model = get_embedding_model()
 
-    # Generate a 384-dimensional query embedding
-    vector = list(model.embed([question]))[0].tolist()
+        # Generate 384-dimensional query embedding
+        vector = list(model.embed([question]))[0].tolist()
 
-    results = get_qdrant_client().query_points(
-        collection_name=COLLECTION_NAME,
-        query=vector,
-        limit=10,
-        score_threshold=0.20,
-        with_payload=True,
-    )
+        results = get_qdrant_client().query_points(
+            collection_name=COLLECTION_NAME,
+            query=vector,
+            limit=10,
+            score_threshold=0.20,
+            with_payload=True,
+        )
 
-    chunks = [
-        point.payload["text"]
-        for point in results.points
-        if point.payload and point.payload.get("text")
-    ]
+        chunks = [
+            point.payload["text"]
+            for point in results.points
+            if point.payload and point.payload.get("text")
+        ]
 
-    return "\n\n".join(chunks)
+        return "\n\n".join(chunks)
+
+    except Exception:
+        logger.exception("Knowledge retrieval failed")
+
+        # Allow AI to respond even if RAG is unavailable
+        return ""
