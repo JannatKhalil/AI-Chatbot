@@ -1,4 +1,4 @@
-const API_URL = "https://ai-chatbot-l2ps.vercel.app";
+const API_URL = "http://127.0.0.1:8000";
 
 // ===============================
 // LOGIN
@@ -106,7 +106,7 @@ export async function saveChatMessage(chatId, role, content, token) {
 // ===============================
 // GET AI RESPONSE FROM GROQ
 // ===============================
-export async function getAIResponse(message, token) {
+export async function getAIResponse(chatId, message, token) {
   const response = await fetch(`${API_URL}/api/ai/chat`, {
     method: "POST",
     headers: {
@@ -119,12 +119,15 @@ export async function getAIResponse(message, token) {
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(data.detail || "AI response failed");
+    throw new Error(
+      typeof data.detail === "string"
+        ? data.detail
+        : "AI response failed"
+    );
   }
 
-  return data.reply;
+  return data.reply ?? data.response ?? data.answer ?? "";
 }
-
 // ===============================
 // RENAME CHAT
 // ===============================

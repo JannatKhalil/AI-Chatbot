@@ -3,12 +3,10 @@ import { loginUser, registerUser } from "../services/api";
 
 function Login({ onLogin }) {
   const [isSignup, setIsSignup] = useState(false);
-
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
@@ -62,180 +60,218 @@ function Login({ onLogin }) {
   };
 
   const inputStyle =
-    "w-full px-4 py-3 rounded-xl border border-purple-200 bg-white outline-none focus:ring-2 focus:ring-purple-400 transition-all";
+    "w-full rounded-2xl border border-[#E6D5C8] bg-[#FFFCF7] px-4 py-3.5 text-sm text-[#54323D] placeholder:text-[#B5A0A0] outline-none transition focus:border-[#A87991] focus:ring-4 focus:ring-[#A87991]/15";
 
   const labelStyle =
-    "block text-sm font-semibold text-purple-900 mb-2";
+    "mb-2 block text-sm font-semibold text-[#633D4A]";
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-100 via-violet-100 to-purple-200 p-5">
-      <div className="w-full max-w-md bg-[#FFF9F2] rounded-3xl shadow-2xl p-9 border border-purple-200">
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#F3E5CF] px-4 py-8 sm:px-6">
+      <div className="pointer-events-none absolute -left-20 -top-20 h-72 w-72 rounded-full bg-[#DCC8EF]/70 blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-24 -right-16 h-80 w-80 rounded-full bg-[#E8C6C9]/60 blur-3xl" />
 
-        {/* LOGO */}
-        <div className="text-center mb-8">
-          <div className="w-16 h-16 mx-auto bg-gradient-to-br from-purple-500 to-violet-700 rounded-2xl flex items-center justify-center shadow-lg mb-4">
-            <span className="text-white text-4xl">✦</span>
+      <div className="relative grid w-full max-w-5xl overflow-hidden rounded-[2rem] border border-white/70 bg-[#FFF9F0] shadow-[0_25px_80px_rgba(91,53,68,0.15)] md:grid-cols-2">
+
+        {/* Left welcome panel */}
+        <div className="relative hidden flex-col justify-between overflow-hidden bg-[#DCC8EF] p-10 md:flex lg:p-12">
+          <div className="absolute -right-12 top-20 h-40 w-40 rounded-full border border-white/40" />
+          <div className="absolute -bottom-16 -left-10 h-56 w-56 rounded-full border border-white/40" />
+
+          <div className="relative">
+            <div className="mb-5 h-20 w-20 shrink-0 overflow-hidden rounded-full border-2 border-white/70 bg-[#FBF7F0] shadow-md">
+              <img
+                src="/jannat-logo.png"
+                alt="Jannat AI profile"
+                className="h-full w-full rounded-full object-cover"
+              />
+            </div>
+
+            <p className="text-xs font-bold uppercase tracking-[0.3em] text-[#79566F]">
+              YOUR PERSONAL AI SPACE
+            </p>
+
+            <h1 className="mt-5 text-4xl font-extrabold leading-tight text-[#563647] lg:text-5xl">
+              A little space
+              <br />
+              for big ideas.
+            </h1>
+
+            <p className="mt-5 max-w-sm leading-7 text-[#72556D]">
+              Think freely, ask anything, and let your ideas bloom with your
+              intelligent AI companion.
+            </p>
           </div>
 
-          <h1 className="text-3xl font-extrabold text-purple-950">
-            Jannat Chatbot
-          </h1>
-
-          <p className="text-purple-500 mt-2 text-sm">
-            Your Intelligent AI Companion
-          </p>
-
-          <h2 className="text-xl font-bold text-purple-900 mt-6">
-            {isSignup ? "Create Your Account ✨" : "Welcome Back 💜"}
-          </h2>
-
-          <p className="text-sm text-purple-500 mt-2">
-            {isSignup
-              ? "Join Jannat AI and start chatting"
-              : "Log in to continue your conversations"}
-          </p>
+          <span className="absolute right-10 top-8 text-3xl text-white/80">
+            ✦
+          </span>
+          <span className="absolute bottom-40 right-12 text-2xl text-white/80">
+            ✧
+          </span>
         </div>
 
-        {/* LOGIN / SIGNUP FORM */}
-        <form onSubmit={handleSubmit} className="space-y-5">
+        {/* Login / Signup panel */}
+        <div className="px-6 py-9 sm:px-10 sm:py-12 lg:px-12">
+          <div className="mb-8 text-center">
+            <div className="mx-auto mb-4 h-20 w-20 shrink-0 overflow-hidden rounded-full border-2 border-[#E8D7C9] bg-[#F3E5CF] shadow-sm">
+              <img
+                src="/jannat-logo.png"
+                alt="Jannat AI logo"
+                className="h-full w-full rounded-full object-cover"
+              />
+            </div>
 
-          {/* NAME - SIGNUP ONLY */}
-          {isSignup && (
+            <p className="text-xs font-bold uppercase tracking-[0.25em] text-[#A87991]">
+              WELCOME TO
+            </p>
+
+            <h2 className="mt-2 text-3xl font-extrabold tracking-tight text-[#633D4A]">
+              Jannat AI
+            </h2>
+
+            <p className="mt-2 text-sm text-[#927A7B]">
+              Your Intelligent AI Companion
+            </p>
+          </div>
+
+          <div className="mb-7">
+            <h3 className="text-2xl font-bold text-[#633D4A]">
+              {isSignup ? "Create your account" : "Welcome back"}
+              <span className="ml-2 text-xl">
+                {isSignup ? "🌷" : "💜"}
+              </span>
+            </h3>
+
+            <p className="mt-2 text-sm leading-6 text-[#927A7B]">
+              {isSignup
+                ? "Create your space and start a new conversation."
+                : "Your little corner of ideas is waiting for you."}
+            </p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-5">
+            {isSignup && (
+              <div>
+                <label className={labelStyle}>Full Name</label>
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Enter your full name"
+                  required
+                  minLength={2}
+                  maxLength={50}
+                  autoComplete="name"
+                  className={inputStyle}
+                />
+              </div>
+            )}
+
             <div>
-              <label className={labelStyle}>
-                Full Name
-              </label>
-
+              <label className={labelStyle}>Email Address</label>
               <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Enter your full name"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@example.com"
                 required
-                minLength={2}
-                maxLength={50}
-                autoComplete="name"
+                autoComplete="email"
                 className={inputStyle}
               />
             </div>
-          )}
 
-          {/* EMAIL */}
-          <div>
-            <label className={labelStyle}>
-              Email Address
-            </label>
-
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your email"
-              required
-              autoComplete="email"
-              className={inputStyle}
-            />
-          </div>
-
-          {/* PASSWORD */}
-          <div>
-            <label className={labelStyle}>
-              Password
-            </label>
-
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter your password"
-              required
-              minLength={isSignup ? 8 : undefined}
-              autoComplete={
-                isSignup ? "new-password" : "current-password"
-              }
-              className={inputStyle}
-            />
-          </div>
-
-          {/* CONFIRM PASSWORD - SIGNUP ONLY */}
-          {isSignup && (
             <div>
-              <label className={labelStyle}>
-                Confirm Password
-              </label>
-
+              <label className={labelStyle}>Password</label>
               <input
                 type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                placeholder="Confirm your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter your password"
                 required
-                minLength={8}
-                autoComplete="new-password"
+                minLength={isSignup ? 8 : undefined}
+                autoComplete={
+                  isSignup ? "new-password" : "current-password"
+                }
                 className={inputStyle}
               />
             </div>
-          )}
 
-          {/* ERROR */}
-          {error && (
-            <p
-              role="alert"
-              className="text-red-600 text-sm text-center bg-red-50 p-3 rounded-xl"
+            {isSignup && (
+              <div>
+                <label className={labelStyle}>Confirm Password</label>
+                <input
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="Enter your password again"
+                  required
+                  minLength={8}
+                  autoComplete="new-password"
+                  className={inputStyle}
+                />
+              </div>
+            )}
+
+            {error && (
+              <p
+                role="alert"
+                className="rounded-2xl border border-red-100 bg-red-50 p-3 text-sm text-red-700"
+              >
+                {error}
+              </p>
+            )}
+
+            {success && (
+              <p
+                role="status"
+                className="rounded-2xl border border-green-100 bg-green-50 p-3 text-sm text-green-700"
+              >
+                {success}
+              </p>
+            )}
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full rounded-2xl bg-[#704555] px-5 py-3.5 font-semibold text-white shadow-lg shadow-[#704555]/20 transition duration-200 hover:-translate-y-0.5 hover:bg-[#5B3545] hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {error}
-            </p>
-          )}
+              {loading
+                ? isSignup
+                  ? "Creating account..."
+                  : "Logging in..."
+                : isSignup
+                  ? "Create Account →"
+                  : "Login to Your Space →"}
+            </button>
+          </form>
 
-          {/* SUCCESS */}
-          {success && (
-            <p
-              role="status"
-              className="text-green-700 text-sm text-center bg-green-50 p-3 rounded-xl"
+          <div className="my-7 flex items-center gap-4">
+            <div className="h-px flex-1 bg-[#E9DCD1]" />
+            <span className="text-xs text-[#B19A98]">A FRESH START</span>
+            <div className="h-px flex-1 bg-[#E9DCD1]" />
+          </div>
+
+          <div className="text-center">
+            <p className="text-sm text-[#927A7B]">
+              {isSignup
+                ? "Already have an account?"
+                : "New to Jannat AI?"}
+            </p>
+
+            <button
+              type="button"
+              onClick={switchMode}
+              disabled={loading}
+              className="mt-2 font-bold text-[#8A5B79] transition hover:text-[#633D4A] hover:underline disabled:opacity-50"
             >
-              {success}
-            </p>
-          )}
+              {isSignup ? "Login instead" : "Create your account ✨"}
+            </button>
+          </div>
 
-          {/* SUBMIT BUTTON */}
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full py-3 bg-gradient-to-r from-purple-500 to-violet-700 hover:from-purple-600 hover:to-violet-800 text-white font-semibold rounded-xl shadow-lg transition-all disabled:opacity-50"
-          >
-            {loading
-              ? isSignup
-                ? "Creating Account..."
-                : "Logging in..."
-              : isSignup
-                ? "Create Account →"
-                : "Login →"}
-          </button>
-        </form>
-
-        {/* SWITCH BETWEEN LOGIN AND SIGNUP */}
-        <div className="text-center mt-6">
-          <p className="text-sm text-purple-700">
-            {isSignup
-              ? "Already have an account?"
-              : "Don't have an account?"}
+          <p className="mt-8 text-center text-xs text-[#B19A98]">
+            Made for curiosity, creativity & little discoveries 🦋
           </p>
-
-          <button
-            type="button"
-            onClick={switchMode}
-            disabled={loading}
-            className="mt-2 text-purple-700 font-bold hover:text-violet-900 hover:underline transition-all disabled:opacity-50"
-          >
-            {isSignup ? "Login Here" : "Create an Account ✨"}
-          </button>
         </div>
-
-        {/* FOOTER */}
-        <p className="text-center text-xs text-purple-400 mt-7">
-          ✦ Welcome to your intelligent conversation space
-        </p>
-
       </div>
     </div>
   );
